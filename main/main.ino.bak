@@ -1,0 +1,88 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <Task.h>
+#include <Queue.h>
+// #include <esp_log.h>
+#include "i2s_adc.h"
+#include "cloud.h"
+
+const char* ssid = "Mangdang";
+const char* password = "mangdang";
+const char* accessToken = "ya29.a0AXooCgu22updbdfMis6F5RGH4-cP_7F6at6Kgts8g8luWqX9J5Xytwp_Aqfy1FBIibOrFnuwhLnKyPoy1mozMk3PgHGGRy1ReGQt_noIl6dtlzPWjffCVT0uk-bwUr3P3PeVOm7xKJTStYd7onRguLmRAl--_JWiIAd60gaCgYKAaYSARESFQHGX2MiqroDao10JDjaSibfHPvNBA0173";
+const char* bucketName = "mangdang_voice";
+const char filename[] = "/audio.wav";
+const char* audioContent = "gs://mangdang_voice/audio.wav";
+
+CloudService cloudService(ssid, password, accessToken, bucketName);
+
+bool record_enable = true;
+bool cloud_enable = false;
+
+void setup() {
+  Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+  ets_printf("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    ets_printf(".");
+  }
+  ets_printf("\nConnected\n");
+
+  if (WiFi.status() == WL_CONNECTED) {
+    ets_printf("Hello world\n");
+
+    xTaskCreate(record_task, "record_task", 1024 * 8, NULL, 1, NULL);
+    // xTaskCreate(cloud_task, "cloud_task", 1024, NULL, 1, NULL);
+  } else {
+    ets_printf("WiFi Disconnected");
+  }
+}
+
+void record_task(void* arg) {
+  ets_printf("record_task init start\n");
+  record_init();
+  ets_printf("record_task init end\n");
+  while (1) {
+    ets_printf("record_task wait for record queue ready or init finish ...\n");
+    if (record_enable) {
+      ets_printf("record start.\n");
+      // do record
+      record();
+      ets_printf("record end.\n");
+      cloudService.uploadFile(filename);
+      cloudService.receiveFile(audioContent);
+      ets_printf("cloud end.\n");
+      break;
+    } else {
+      ets_printf("record should not start.\n");
+      delay(1000);
+    }
+  }
+  vTaskDelete(NULL);
+}
+
+void cloud_task(void* arg) {
+  delay(2000);
+  ets_printf("cloud_task init\n");
+  while (1) {
+    ets_printf("cloud_task wait for record file ready ...\n");
+ 
+    if (cloud_enable) {
+      ets_printf("cloud start.\n");
+      // do cloud 
+      delay(60000);
+      record_enable = true;
+      cloud_enable = false;
+    } else {
+      ets_printf("cloud should not start.\n");
+      delay(10000);
+    }
+  }
+  vTaskDelete(NULL);
+}
+
+void loop() {
+  // 主循环中不做任何事情
+}
