@@ -13,7 +13,10 @@ void record_task(void *args) {
   record_init();
   record();
   uploadFile();
-  speechToText();
+  String input_text = speechToText();
+  if (input_text != NULL) {
+    aitts(input_text);
+  }
   delay(5000);
   
   vTaskDelete(NULL);

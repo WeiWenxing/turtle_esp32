@@ -1,0 +1,132 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include "Audio.h"
+
+// WiFi 配置
+const char* ssid = "Mangdang";
+const char* password = "mangdang";
+
+// Gemini API 配置
+const char* apiURL = "https://us-central1-aiplatform.googleapis.com/v1/projects/modern-rex-420404/locations/us-central1/publishers/google/models/gemini-1.5-flash:streamGenerateContent";
+const char* bearerToken = "ya29.a0AXooCgu5Xa2WjBaf_1VHfejemUlr6Sg-FNGL6tddmAz6JRAlcJ7tP87PsxhwFujvvMoR2B9PyMqWdTX-e9gZtVviG2ZiLBMhyO6Fq3KvjxS-Lv0RjAm_IOsr0R91WGWM_RdKwNz2XhsvP-ngG_Qac0LvNiNCC_898RnVogaCgYKAQISARESFQHGX2MiEPB8MFMVRvLreUckLeVs_w0173";
+
+// TTS 配置
+#define I2S_DOUT 17 // Data Out
+#define I2S_BCLK 16 // Bit Clock
+#define I2S_LRC 15  // Left/Right Clock
+Audio audio;
+String baseURL = "https://api.voicerss.org/?key=2ab6d13d5e3d430a91406018dfa44c93&hl=en-us&src=";
+String audioFormat = "&c=mp3&f=16khz_8bit_mono";
+
+// 你想要的 prompt
+String transcript = "Hi!";
+String geminiResponseText = ""; // 用于存储Gemini的反馈
+
+bool isAlphaNumeric(char c) {
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ' ');
+}
+
+String encodeText(const String& text) {
+  String encodedText = "";
+  for (int i = 0; i < text.length(); i++) {
+    char c = text.charAt(i);
+    if (isAlphaNumeric(c)) {
+      if (c == ' ') {
+        encodedText += "%20";
+      } else {
+        encodedText += c;
+      }
+    }
+  }
+  return encodedText;
+}
+
+void setup() {
+  // 初始化串口监视器
+  Serial.begin(115200);
+  delay(1000);
+
+  // 连接 WiFi
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("正在连接 WiFi...");
+  }
+  Serial.println("WiFi 连接成功");
+
+  // 发送 POST 请求
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("开始发送 HTTP POST 请求...");
+    HTTPClient http;
+    http.begin(apiURL);
+    http.addHeader("Content-Type", "application/json");
+    http.addHeader("Authorization", String("Bearer ") + bearerToken);
+
+    // 构建 JSON 数据
+    String jsonData = "{\"contents\": {\"role\": \"user\", \"parts\": [{\"text\": \"" + transcript + "\"}]}}";
+    Serial.print("发送的 JSON 数据: ");
+    Serial.println(jsonData);
+
+    int httpResponseCode = http.POST(jsonData);
+
+    // 检查 HTTP 响应代码
+    if (httpResponseCode > 0) {
+      String response = http.getString();
+      Serial.print("HTTP 响应代码: ");
+      Serial.println(httpResponseCode);
+      Serial.print("响应内容: ");
+      Serial.println(response);
+
+      // 筛选数据
+      int startIndex = 0;
+      while (true) {
+        startIndex = response.indexOf("\"text\": \"", startIndex);
+        if (startIndex == -1) break;
+        startIndex += 9;
+        int endIndex = response.indexOf("\"", startIndex);
+        if (endIndex == -1) break;
+        geminiResponseText += response.substring(startIndex, endIndex) + " ";
+        startIndex = endIndex + 1;
+      }
+
+      Serial.print("组合后的文本: ");
+      Serial.println(geminiResponseText);
+    } else {
+      Serial.print("请求失败，HTTP 响应代码: ");
+      Serial.println(httpResponseCode);
+    }
+
+    // 结束 HTTP 请求
+    http.end();
+
+    // TTS 部分
+    audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+    //audio.setVolume(21); // 设置音量级别 (0-100)
+
+    // 编码文本并过滤掉非字母数字字符
+    String encodedText = encodeText(geminiResponseText);
+
+    // 生成音频 URL
+    String audioURL = baseURL + encodedText + audioFormat;
+    Serial.println("生成的URL: " + audioURL);
+
+    // 连接并播放音频
+    audio.connecttohost(audioURL.c_str());
+  } else {
+    Serial.println("WiFi 连接失败");
+  }
+}
+
+void loop() {
+  audio.loop(); // 必须反复调用以保持音频播放
+}
+
+void audio_id3data(const char *info) {  // 当找到ID3数据时调用
+  Serial.print("id3data: ");
+  Serial.println(info);
+}
+
+void audio_eof_mp3(const char *info) {  // 当MP3文件播放结束时调用
+  Serial.print("eof_mp3: ");
+  Serial.println(info);
+}

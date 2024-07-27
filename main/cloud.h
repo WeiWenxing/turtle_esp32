@@ -6,6 +6,7 @@
 #include "params.h"
 
 void uploadFile();
-void speechToText();
+String speechToText();
+void aitts(String transcript);
 
 #endif
