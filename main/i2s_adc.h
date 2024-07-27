@@ -5,6 +5,7 @@
 #include <driver/i2s.h>
 #include <SPIFFS.h>
 #include <Task.h>
+#include "params.h"
 
 #define I2S_WS 10
 #define I2S_SD 4

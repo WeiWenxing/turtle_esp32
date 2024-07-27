@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "i2s_adc.h"
 #include <stdlib.h>
+#include "params.h"
 
 File file;
-const char filename[] = "/audio.wav";
 const int headerSize = 44;
 
 
@@ -161,8 +161,8 @@ void record() {
     i2s_adc_data_scale(flash_write_buff, (uint8_t*)i2s_read_buff, i2s_read_len);
     file.write((const byte*) flash_write_buff, i2s_read_len);
     flash_wr_size += i2s_read_len;
-    ets_printf("Sound recording %u%%\n", flash_wr_size * 100 / FLASH_RECORD_SIZE);
-    ets_printf("Never Used Stack Size: %u\n", uxTaskGetStackHighWaterMark(NULL));
+    // ets_printf("Sound recording %u%%\n", flash_wr_size * 100 / FLASH_RECORD_SIZE);
+    // ets_printf("Never Used Stack Size: %u\n", uxTaskGetStackHighWaterMark(NULL));
   }
   file.close();
 
