@@ -7,6 +7,6 @@
 
 void uploadFile();
 String speechToText();
-void aitts(String transcript);
+String aitts(String transcript);
 
 #endif

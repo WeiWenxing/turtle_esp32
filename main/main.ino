@@ -3,6 +3,7 @@
 #include <FS.h>
 #include "i2s_adc.h"
 #include "cloud.h"
+#include "tts.h"
 
 const char* ssid = "Mangdang";
 const char* password = "mangdang";
@@ -14,8 +15,11 @@ void record_task(void *args) {
   record();
   uploadFile();
   String input_text = speechToText();
-  if (input_text != NULL) {
-    aitts(input_text);
+  if (input_text != "") {
+    String ai_text = aitts(input_text);
+    if (ai_text != "") {
+      tts(ai_text);
+    }
   }
   delay(5000);
   
