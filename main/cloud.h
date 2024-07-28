@@ -5,6 +5,6 @@
 
 void uploadFile();
 String speechToText();
-String aitts(String transcript);
+String llm_response(String transcript);
 
 #endif

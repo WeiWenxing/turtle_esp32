@@ -4,7 +4,7 @@
 #include <SPIFFS.h>
 #include "params.h"
 
-const char* accessToken = "ya29.c.c0ASRK0GaSpIpF0doOQJrKAeqcDoNpwd9WKMoM2l1V4rDx331yAG1XaOWrYd36D0VMXjzACrB9PpgFqbCmmqm7vNeXQdlePNGdYzFYRPkx5-Twr9K8l_04DCpwd2RTxXOUSQ1HpC5LDYiiodtyV4k9cc3qcdeCtAUdWabCPrUZq9YOzTLWuwyYeiRC97U_JX6cYFkvgV68-sJacrl-7WYPkQMqtuLeae8hJR629bDZAFdEbXi3j4uM3JxV0uIq6ukpA1INP0zvXWjxYnIHOrF_6fBNSs0KEtWdaSJH-7kZRAK1o8WQIp1rz-oMX0pUwri3iND2L9mPpfWsrLYKB8lY080Rv87QRJCcy8lXsbQ9akNl70ECP4SpZoIE384Puprdc6lWu0Jg_k9od6znjc1nYzweS-dBhYtudQpzgxtuRZ2tSpt6h_cfz-rqcrWxOUbbml4rUOtpRRlBjrgQpnVI98vrhF0Zo3lqdgqJ9eOmh30J0hj5ej69oqbzfYdJ2gwj3wFykb6yWgVtU61k6fgllkM2ZybJ2diz7OqsalsdksmsYkRqqrvYsvJxdSFoJxbJXbwmFXeh4cre_FZvgh4uUgu9i-rZSgygUaI4dWI3McvVXuW-1UQ9JxBbUrQMzg7-mSciyl27Ypbh_3v9Izrjd6vUwrh1mB5vnQvsp4Ryuhqp9gx1Xsc7fQq60SdW7q210scFBIrwXI097FB_O0ftZ3jihpSyiFvmsSJMSMsIfrn_Owfs7QX1R6qhv5UIvF2c-USvmr3WWjFrFaer1g1S1IveumSm1pvglkWatOVBin-37nm6S1wueQtYnO20B2ja5QSRWJO4Y2xzWBoZxlVv4kkaOq4hlee4x1-ppXYjOk5dYZ4XnzfY992YYYmY8ehQ7IQbB371bjyix7SRc9FqSS07Uyg0tY0-_X2qxvdRUcO7otpf9i6306Bkx4Wcl70JYh0Ug7vf2WWb4mxWOl20p0M5harpocVXr9gfvdSFSjXUttXjlMnzYMe";
+const char* accessToken = "ya29.c.c0ASRK0GbvtIwvCzEeowuVsb_pKdLB2idQac5RE_Y4sgHFZgQD534jUPgYm1DVEWrZSS7Tn5gEmv1q7AN5q0-RLQVGR8CmjRUKXxVi2af4GAHuWXzZ9uHed5g6zGP8Jf_8EztuvADcxh43jgLjVWRGdSCX0FBsj7lCsRpjsHhaU2A9M0BM9EW70GoCOQV_ZapP_abkrXUgRL6k7uzKWSmXKDdJThPFHRVLehxkZRgvmO8NdffH42itrBDCT-S7inNxsSZnYiLdbLx8AC1xG29ATwM_nYNhvpFTO4eDENO60iKXWSvLX4WrREa_ApDrrHweZDJ4BGpyFSvX8AXZ1Y2AepRv4u0h95Zs85UU4gTL9ksXhIb63hG6w94H384K7Uyt3oztcIUM6dq1aO_oMWnMwFms5RQuag62SJzWjUpeV6cfF8-Fjq76XgI-dj6a0v6iFuZW53cmRlmqs-v5bYMfRYYbnII3ZXqmgwfhcOwhBUIn0b8wSBMMMJqF_XQtncig-Z9V0J_dvfM-ZumccVbxaR6_qg20Y7fljrrza1zw3Wye_ackqJ3y5pMMM-U9rxU9iMym3U4p9e9id04X7FeJxjXrBS5M70n8dY69yqSXF_wnrWjhk0i7WtnvB9MaS5mpUQ2FlXvSkx2d4Me2_cyazZjpg9898OUeORj9BsqRBbm7u1ZJ7JZz9iI0Q-gRWS22wc0lFgrRS-FhVcZkl8QsxQsj2FbmSB5Vfrv_wF9b7w7rjzV7g6wbsiqIMtYIu97lug6mUaqYO3VkcY5pf6z2h2MXhhwtcFuQWMbyjor81m2Yr9_r7IUVopo93abOmYVf8JSvjwWMBpuaI7o4y1Xcry8cYtq3Z4YbldWdtR8fnXcXf-dccuXqzvcQMqY0pa74UtQt0W4vwxkmFQOWVjyQl1S0OJe6I8_BvdFngt8i9vpnbk76dwM-j725R2XsteX-r7JkVWicR8g3q_7ZxyW1Brr1_Rhs4sBagcFIjQQr4exuBBdhWWRgxiV";
 
 // STT Config
 const char* bucketName = "mangdang_voice";
@@ -12,7 +12,7 @@ const char* audioContent = "gs://mangdang_voice/audio.wav";
 const char* gcAdd = "https://storage.googleapis.com/upload/storage/v1/b/mangdang_voice/o?uploadType=media&name=audio.wav";
 
 // Gemini API Config
-const char* apiURL = "https://us-central1-aiplatform.googleapis.com/v1/projects/modern-rex-420404/locations/us-central1/publishers/google/models/gemini-1.5-flash:streamGenerateContent";
+const char* apiURL = "https://us-central1-aiplatform.googleapis.com/v1/projects/modern-rex-420404/locations/us-central1/publishers/google/models/gemini-1.5-flash:streamGenerateContent?alt=sse";
 
 HTTPClient _http;
 
@@ -89,14 +89,45 @@ String speechToText() {
   return "";
 }
 
-String aitts(String transcript) {
+String generateJsonString(String text) {
+    return "{"
+        "\"contents\": ["
+            "{"
+            "\"role\": \"USER\","
+            "\"parts\": { \"text\": \"Now, you are a small female robo turtle, your name is Amy. You will be a helpful AI assistent. Your LLM api is connected to STT and TTS models so you are able to hear the user.\" }"
+            "},"
+            "{"
+            "\"role\": \"MODEL\","
+            "\"parts\": { \"text\": \"OK, I know.\" }"
+            "},"
+            "{"
+            "\"role\": \"USER\","
+            "\"parts\": { \"text\": \"" + text + "\" }"
+            "}"
+        "]"
+        ",\"safety_settings\": {"
+            "\"category\": \"HARM_CATEGORY_SEXUALLY_EXPLICIT\","
+            "\"threshold\": \"BLOCK_LOW_AND_ABOVE\""
+        "},"
+        "\"generation_config\": {"
+            "\"temperature\": 0.2,"
+            "\"topP\": 0.8,"
+            "\"topK\": 40,"
+            "\"maxOutputTokens\": 200"
+        "}"
+        "}";
+}
+
+
+String llm_response(String transcript) {
   Serial.println("开始发送 HTTP POST 请求...");
   _http.begin(apiURL);
   _http.addHeader("Content-Type", "application/json");
   _http.addHeader("Authorization", "Bearer " + String(accessToken));
 
   // 构建 JSON 数据
-  String jsonData = "{\"contents\": {\"role\": \"user\", \"parts\": [{\"text\": \"" + transcript + "\"}]}}";
+  // String jsonData = "{\"contents\": {\"role\": \"user\", \"parts\": [{\"text\": \"" + transcript + "\"}]}}";
+  String jsonData = generateJsonString(transcript);
   Serial.print("发送的 JSON 数据: ");
   Serial.println(jsonData);
 

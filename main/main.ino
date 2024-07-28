@@ -10,7 +10,16 @@ const char* password = "mangdang";
 
 
 void record_task(void* args) {
-  unsigned long cloud_start_time, gc_end_time, stt_end_time, ai_end_time, duration; // for delay
+  unsigned long cloud_start_time, gc_end_time, stt_end_time, ai_end_time, duration;  // for delay
+
+
+  cloud_start_time = millis();
+  String ai_text = llm_response("Hi, what's your name?");
+  ai_end_time = millis();
+  duration = ai_end_time - cloud_start_time;
+  Serial.print("ai(), took: ");
+  Serial.println(duration);
+
   record_init();
   record();
   Serial.println("Record end!");
@@ -31,7 +40,7 @@ void record_task(void* args) {
   Serial.println(duration);
 
   if (input_text != "") { // ai response
-    String ai_text = aitts(input_text);
+    String ai_text = llm_response(input_text);
     ai_end_time = millis();
     duration = ai_end_time - stt_end_time;
     Serial.print("ai(), took: ");
@@ -45,6 +54,7 @@ void record_task(void* args) {
     }
   }
   // tts("I  am doing well, thank you for asking! I am a large language model,  so I don't have a name in the traditional sense. You can call me Amy");
+
   delay(5000);
 
   vTaskDelete(NULL);
