@@ -1,9 +1,9 @@
 #include "tts.h"
 #include <Arduino.h>
-#ifdef ESP_IDF_VERSION_MAJOR
-#undef ESP_IDF_VERSION_MAJOR
-#endif
-#define ESP_IDF_VERSION_MAJOR 4
+// #ifdef ESP_IDF_VERSION_MAJOR
+// #undef ESP_IDF_VERSION_MAJOR
+// #endif
+// #define ESP_IDF_VERSION_MAJOR 5
 #include <Audio.h>
 
 #define I2S_DOUT 17  // Data Out
