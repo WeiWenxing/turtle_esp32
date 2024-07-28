@@ -3,4 +3,4 @@
 
 const char filename[] = "/audio.wav";
 
-#endif // PARAMS_H
+#endif  // PARAMS_H

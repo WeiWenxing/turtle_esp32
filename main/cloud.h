@@ -1,9 +1,7 @@
 #ifndef CLOUD_H
 #define CLOUD_H
 
-#include <HTTPClient.h>
-#include <SPIFFS.h>
-#include "params.h"
+#include <Arduino.h>
 
 void uploadFile();
 String speechToText();

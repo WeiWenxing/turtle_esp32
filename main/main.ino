@@ -9,8 +9,7 @@ const char* ssid = "Mangdang";
 const char* password = "mangdang";
 
 
-
-void record_task(void *args) {
+void record_task(void* args) {
   record_init();
   record();
   uploadFile();
@@ -21,8 +20,9 @@ void record_task(void *args) {
       tts(ai_text);
     }
   }
+  // tts("I  am doing well, thank you for asking! I am a large language model,  so I don't have a name in the traditional sense. You can call me Amy");
   delay(5000);
-  
+
   vTaskDelete(NULL);
 }
 
@@ -47,5 +47,4 @@ void setup() {
 }
 
 void loop() {
-  
 }
