@@ -1,14 +1,16 @@
 #include <Arduino.h>
+#include <SPIFFS.h>
 #include "i2s_adc.h"
 #include <stdlib.h>
 #include "params.h"
+#include <driver/i2s_std.h>
+#include <driver/gpio.h>
 
-File file;
 const int headerSize = 44;
+i2s_chan_handle_t rx_handle;
+File file;
 
-
-
-void wavHeader(byte* header, int wavSize){
+void wavHeader(byte* header, int wavSize) {
   header[0] = 'R';
   header[1] = 'I';
   header[2] = 'F';
@@ -58,7 +60,7 @@ void wavHeader(byte* header, int wavSize){
 
 void listSPIFFS(void) {
   Serial.println(F("\r\nListing SPIFFS files:"));
-  static const char line[] PROGMEM =  "=================================================";
+  static const char line[] PROGMEM = "=================================================";
   Serial.println(FPSTR(line));
   Serial.println(F("  File name                              Size"));
   Serial.println(FPSTR(line));
@@ -81,11 +83,11 @@ void listSPIFFS(void) {
       String fileName = file.name();
       Serial.print("  " + fileName);
       // File path can be 31 characters maximum in SPIFFS
-      int spaces = 33 - fileName.length(); // Tabulate nicely
+      int spaces = 33 - fileName.length();  // Tabulate nicely
       if (spaces < 1) spaces = 1;
       while (spaces--) Serial.print(" ");
-      String fileSize = (String) file.size();
-      spaces = 10 - fileSize.length(); // Tabulate nicely
+      String fileSize = (String)file.size();
+      spaces = 10 - fileSize.length();  // Tabulate nicely
       if (spaces < 1) spaces = 1;
       while (spaces--) Serial.print(" ");
       Serial.println(fileSize + " bytes");
@@ -98,12 +100,12 @@ void listSPIFFS(void) {
 }
 
 void SPIFFSInit() {
-  if(!SPIFFS.begin(true)){
+  if (!SPIFFS.begin(true)) {
     Serial.println("SPIFFS initialisation failed!");
-    while(1) yield();
+    while (1) yield();
   }
   file = SPIFFS.open(filename, FILE_WRITE);
-  if(!file){
+  if (!file) {
     Serial.println("File is not available!");
   }
   byte header[headerSize];
@@ -113,35 +115,56 @@ void SPIFFSInit() {
 }
 
 void i2sInit() {
-  i2s_config_t i2s_config = {
-    .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
-    .sample_rate = I2S_SAMPLE_RATE,
-    .bits_per_sample = i2s_bits_per_sample_t(I2S_SAMPLE_BITS),
-    .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-    .communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-    .intr_alloc_flags = 0,
-    .dma_buf_count = 64,
-    .dma_buf_len = 1024,
-    .use_apll = 1
+  i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER);
+  i2s_new_channel(&chan_cfg, NULL, &rx_handle);
+
+  i2s_std_config_t std_cfg = {
+    .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(I2S_SAMPLE_RATE),
+    .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_MONO),
+    .gpio_cfg = {
+      .mclk = I2S_GPIO_UNUSED,
+      .bclk = GPIO_NUM_11,
+      .ws = GPIO_NUM_10,
+      .dout = I2S_GPIO_UNUSED,
+      .din = GPIO_NUM_4,
+      .invert_flags = {
+        .mclk_inv = false,
+        .bclk_inv = false,
+        .ws_inv = false,
+      },
+    },
   };
-  i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
-  const i2s_pin_config_t pin_config = {
-    .bck_io_num = I2S_SCK,
-    .ws_io_num = I2S_WS,
-    .data_out_num = -1,
-    .data_in_num = I2S_SD
-  };
-  i2s_set_pin(I2S_PORT, &pin_config);
+  i2s_channel_init_std_mode(rx_handle, &std_cfg);
+  i2s_channel_enable(rx_handle);
+  // i2s_config_t i2s_config = {
+  //   .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
+  //   .sample_rate = I2S_SAMPLE_RATE,
+  //   .bits_per_sample = i2s_bits_per_sample_t(I2S_SAMPLE_BITS),
+  //   .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+  //   .communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
+  //   .intr_alloc_flags = 0,
+  //   .dma_buf_count = 64,
+  //   .dma_buf_len = 1024,
+  //   .use_apll = 1
+  // };
+  // i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
+  // const i2s_pin_config_t pin_config = {
+  //   .bck_io_num = I2S_SCK,
+  //   .ws_io_num = I2S_WS,
+  //   .data_out_num = -1,
+  //   .data_in_num = I2S_SD
+  // };
+  // i2s_set_pin(I2S_PORT, &pin_config);
 }
 
-void i2s_adc_data_scale(uint8_t * d_buff, uint8_t* s_buff, uint32_t len) {
-    uint32_t j = 0;
-    uint32_t dac_value = 0;
-    for (int i = 0; i < len; i += 2) {
-        dac_value = ((((uint16_t) (s_buff[i + 1] & 0xf) << 8) | ((s_buff[i + 0]))));
-        d_buff[j++] = 0;
-        d_buff[j++] = dac_value * 256 / 2048;
-    }
+void i2s_adc_data_scale(uint8_t* d_buff, uint8_t* s_buff, uint32_t len) {
+  uint32_t j = 0;
+  uint32_t dac_value = 0;
+  for (int i = 0; i < len; i += 2) {
+    dac_value = ((((uint16_t)(s_buff[i + 1] & 0xf) << 8) | ((s_buff[i + 0]))));
+    d_buff[j++] = 0;
+    d_buff[j++] = dac_value * 256 / 2048;
+  }
 }
 
 void record() {
@@ -149,17 +172,20 @@ void record() {
   int flash_wr_size = 0;
   size_t bytes_read;
 
-  char* i2s_read_buff = (char*) calloc(i2s_read_len, sizeof(char));
-  uint8_t* flash_write_buff = (uint8_t*) calloc(i2s_read_len, sizeof(char));
+  char* i2s_read_buff = (char*)calloc(i2s_read_len, sizeof(char));
+  uint8_t* flash_write_buff = (uint8_t*)calloc(i2s_read_len, sizeof(char));
 
-  i2s_read(I2S_PORT, (void*) i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
-  i2s_read(I2S_PORT, (void*) i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+  // i2s_read(I2S_PORT, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+  // i2s_read(I2S_PORT, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+  i2s_channel_read(rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+  i2s_channel_read(rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
 
   Serial.println(" *** Recording Start *** ");
   while (flash_wr_size < FLASH_RECORD_SIZE) {
-    i2s_read(I2S_PORT, (void*) i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+    // i2s_read(I2S_PORT, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+    i2s_channel_read(rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
     i2s_adc_data_scale(flash_write_buff, (uint8_t*)i2s_read_buff, i2s_read_len);
-    file.write((const byte*) flash_write_buff, i2s_read_len);
+    file.write((const byte*)flash_write_buff, i2s_read_len);
     flash_wr_size += i2s_read_len;
     // ets_printf("Sound recording %u%%\n", flash_wr_size * 100 / FLASH_RECORD_SIZE);
     // ets_printf("Never Used Stack Size: %u\n", uxTaskGetStackHighWaterMark(NULL));
