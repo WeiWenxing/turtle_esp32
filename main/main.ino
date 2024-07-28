@@ -10,13 +10,37 @@ const char* password = "mangdang";
 
 
 void record_task(void* args) {
+  unsigned long cloud_start_time, gc_end_time, stt_end_time, ai_end_time, duration; // for delay
   record_init();
   record();
+  Serial.println("Record end!");
+
+  // upload to google cloud
+  cloud_start_time = millis();
   uploadFile();
+  gc_end_time = millis();
+  duration = gc_end_time - cloud_start_time;
+  Serial.print("upload(), took: ");
+  Serial.println(duration);
+
+  //speech to text
   String input_text = speechToText();
-  if (input_text != "") {
+  stt_end_time = millis();
+  duration = stt_end_time - gc_end_time;
+  Serial.print("speechToText(), took: ");
+  Serial.println(duration);
+
+  if (input_text != "") { // ai response
     String ai_text = aitts(input_text);
-    if (ai_text != "") {
+    ai_end_time = millis();
+    duration = ai_end_time - stt_end_time;
+    Serial.print("ai(), took: ");
+    Serial.println(duration);
+
+    duration = ai_end_time - cloud_start_time;
+    Serial.print("all took: ");
+    Serial.println(duration);
+    if (ai_text != "") { // text to speech
       tts(ai_text);
     }
   }
