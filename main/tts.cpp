@@ -46,4 +46,9 @@ void tts(String text) {
 
   // 连接并播放音频
   audio.connecttohost(audioURL.c_str());
+
+  while (1) {
+    audio.loop();
+    delay(10);
+  }
 }
