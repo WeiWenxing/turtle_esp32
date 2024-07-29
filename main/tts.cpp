@@ -9,8 +9,7 @@
 #define I2S_DOUT 17  // Data Out
 #define I2S_BCLK 16  // Bit Clock
 #define I2S_LRC 15   // Left/Right Clock
-const String baseURL = "https://api.voicerss.org/?key=2ab6d13d5e3d430a91406018dfa44c93&hl=en-us&src=";
-const String audioFormat = "&c=mp3&f=16khz_8bit_mono";
+const String baseURL = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=";
 
 
 bool isAlphaNumeric(char c) {
@@ -41,7 +40,7 @@ void tts(String text) {
   String encodedText = encodeText(text);
 
   // 生成音频 URL
-  String audioURL = baseURL + encodedText + audioFormat;
+  String audioURL = baseURL + encodedText;
   Serial.println("生成的URL: " + audioURL);
 
   // 连接并播放音频
