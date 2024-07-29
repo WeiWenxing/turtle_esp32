@@ -13,7 +13,7 @@ const String baseURL = "https://translate.google.com/translate_tts?ie=UTF-8&clie
 
 
 bool isAlphaNumeric(char c) {
-  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ' ');
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ' ') || (c == ',') || (c == '.') || (c == '?') || (c == '!');
 }
 
 String encodeText(const String& text) {
@@ -31,23 +31,46 @@ String encodeText(const String& text) {
   return encodedText;
 }
 
+int countWords(const String& text) {
+  int count = 1;
+  for (int i = 0; i < text.length(); i++) {
+    if (text.charAt(i) == ' ') {
+      count++;
+    }
+  }
+  return count;
+}
+
 void tts(String text) {
   Audio audio;
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
   //audio.setVolume(21); // 设置音量级别 (0-100)
 
   // 编码文本并过滤掉非字母数字字符
+  text.replace("\n", ""); // delete all "\n"
   String encodedText = encodeText(text);
+  Serial.print("final text: ");
+  Serial.println(encodedText);
 
   // 生成音频 URL
   String audioURL = baseURL + encodedText;
-  Serial.println("生成的URL: " + audioURL);
+  Serial.print("生成的URL: ");
+  Serial.println(audioURL);
 
   // 连接并播放音频
   audio.connecttohost(audioURL.c_str());
+  unsigned long start_time = millis();
+  int max_duration = 400 * countWords(text);
+  Serial.print("max_duration: ");
+  Serial.println(max_duration);
 
   while (1) {
     audio.loop();
-    delay(10);
+    delay(1);
+    if (millis() - start_time > max_duration) {
+      audio.stopSong();
+      Serial.println("speech end!");
+      break;
+    }
   }
 }

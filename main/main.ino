@@ -20,43 +20,44 @@ void record_task(void* args) {
   Serial.print("ai(), took: ");
   Serial.println(duration);
 
-  record_init();
-  record();
-  Serial.println("Record end!");
+  while (1) {
+    delete_rec_file();
+    record_init();
+    record();
+    Serial.println("Record end!");
 
-  // upload to google cloud
-  cloud_start_time = millis();
-  uploadFile();
-  gc_end_time = millis();
-  duration = gc_end_time - cloud_start_time;
-  Serial.print("upload(), took: ");
-  Serial.println(duration);
-
-  //speech to text
-  String input_text = speechToText();
-  stt_end_time = millis();
-  duration = stt_end_time - gc_end_time;
-  Serial.print("speechToText(), took: ");
-  Serial.println(duration);
-
-  if (input_text != "") { // ai response
-    String ai_text = llm_response(input_text);
-    ai_end_time = millis();
-    duration = ai_end_time - stt_end_time;
-    Serial.print("ai(), took: ");
+    // upload to google cloud
+    cloud_start_time = millis();
+    uploadFile();
+    gc_end_time = millis();
+    duration = gc_end_time - cloud_start_time;
+    Serial.print("upload(), took: ");
     Serial.println(duration);
 
-    duration = ai_end_time - cloud_start_time;
-    Serial.print("all took: ");
+    //speech to text
+    String input_text = speechToText();
+    stt_end_time = millis();
+    duration = stt_end_time - gc_end_time;
+    Serial.print("speechToText(), took: ");
     Serial.println(duration);
-    if (ai_text != "") { // text to speech
-      tts(ai_text);
+
+    if (input_text != "") {  // ai response
+      String ai_text = llm_response(input_text);
+      ai_end_time = millis();
+      duration = ai_end_time - stt_end_time;
+      Serial.print("ai(), took: ");
+      Serial.println(duration);
+
+      duration = ai_end_time - cloud_start_time;
+      Serial.print("all took: ");
+      Serial.println(duration);
+      if (ai_text != "") {  // text to speech
+        tts(ai_text);
+      }
     }
+    // tts("I  am doing well, thank you for asking! I am a large language model,  so I don't have a name in the traditional sense. You can call me Amy");
   }
-  // tts("I  am doing well, thank you for asking! I am a large language model,  so I don't have a name in the traditional sense. You can call me Amy");
-
   delay(5000);
-
   vTaskDelete(NULL);
 }
 
