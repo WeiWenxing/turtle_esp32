@@ -6,8 +6,7 @@
 #include <SPIFFS.h>
 #include "params.h"
 
-const char* accessToken = "ya29.c.c0ASRK0GYq-SvoER8aOZImdSjp4rUiL6sJrcQjYc3Y4VhIcXL3159oEsZB9dYcQ7qpTxITCfGE0TG66t5dWirMD_9R2q_u1uRj6RO_H6VVOx2eUPpsJEI7irEcDHfvf9TWovJQbzc1fXjSU9DHeAhOGA1B1fAt4O5zIxb-jW0oWZRkSJKQE-ZlOVWjzW1v4FHiQlLvjr_-IqN_MFJypYIMeK44LEeYDQVrd2kpgxp36mHU6Tk64w8afo7yq1R8Ng1wFdp9C0_AZpqQq46DQIFw3J99Axj8JwyxaDP8cpmIAahMe3hr2qtWYtM7PYLuHPf8syFS32Vqems8HBmcjnNQUPT545n8k5vLsJ5zstGfHLQg3gdPmcjOpkGghgE387CzobmiuOyyuierQ0061XtJzfYpXR9xapqlYtpe21mypO3oB53xcs2jIxUrw3ZQg7634s80tcF07S9e5QSazv7_3_mj9avmjl0-mhvW7bflegJ_keQlq3OUyFOcsw_Ba6QfIrlUjxxyusoYUjxkUZ-yUXsSUeiuz5uBXzMl1oWgXYWB904RlUvjtoMk2VfZc7WFgyznjXcfdpB-39jp-XW1YeVvZbslc6geXqcQVs42hiJz1atavXzv5utV9R3fbSrdauxc6M_psJqmXvYrZnwZ99dqSt2FIg8ZUqF48sptRr1MJlcXRdh8vgOZaXoyoow4Ycv4cSxZX2M2Ipjq-3BefUqJBrR9_9jxbtwZ9bkdqMtYb2IdVhcI_uJcbthSFZd-S8iOj4WVI5k_9yIM-4n1X191-puVQ-lJ6ovWohdYVsaYpwaIsRRpimRa69bzn9JV-qX5UxvVV_sbR_O5FzSqk83eWUppzYktVjfcb73JYceaU-gQMSje3Rp78yfS_20xvYqmfQwtrzRie-twcVt88vIhWrZMxSvUaQ3UBaiY_p39oaYWOXz2cew84yhB9cJe1_62Z7RU4npuwUwXW3ozjn3SVOJ_i-5n_oJ36Rw2wYkzl2q1VmZvu3z";
-
+const char* accessToken = "ya29.a0AXooCgt5_phZodupTgh0BvDLOSSYrbFBbYbNxT1zccv_g-RzX3KvQBZUg8ldxgHK3sGnu1XrU8VMpYpwgXuSpat1jsRkVJTsFO7Ky_gnTKU2FCu2IDAk5QhfIjF5snT7F0aBv3orX8kqeZxarg4VnYvyqHdzv6a1e8JUaCgYKAW8SARESFQHGX2MiG1WzrrP8S0m5Q-h6L8QKWg0171";
 // STT Config
 const char* bucketName = "mangdang_voice";
 const char* audioContent = "gs://mangdang_voice/audio.wav";
@@ -115,7 +114,7 @@ String generateJsonString(String text) {
             "\"temperature\": 0.2,"
             "\"topP\": 0.8,"
             "\"topK\": 40,"
-            "\"maxOutputTokens\": 200"
+            "\"maxOutputTokens\": 50"
         "}"
         "}";
 }

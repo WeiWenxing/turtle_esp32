@@ -115,7 +115,13 @@ void SPIFFSInit() {
 }
 
 void i2sInit() {
-  i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER);
+  i2s_chan_config_t chan_cfg = {
+    .id = I2S_NUM_AUTO,
+    .role = I2S_ROLE_MASTER,
+    .dma_desc_num = 64,
+    .dma_frame_num = 1024,
+    .auto_clear = false,
+  }
   i2s_new_channel(&chan_cfg, NULL, &rx_handle);
 
   i2s_std_config_t std_cfg = {
@@ -168,6 +174,8 @@ void i2s_adc_data_scale(uint8_t* d_buff, uint8_t* s_buff, uint32_t len) {
 }
 
 void record() {
+  SPIFFS.remove(filename);
+  SPIFFSInit();
   int i2s_read_len = I2S_READ_LEN;
   int flash_wr_size = 0;
   size_t bytes_read;
@@ -201,7 +209,6 @@ void record() {
 }
 
 void record_init() {
-  SPIFFSInit();
   i2sInit();
 }
 

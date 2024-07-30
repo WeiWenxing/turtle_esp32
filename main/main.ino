@@ -12,9 +12,10 @@ const char* password = "mangdang";
 void record_task(void* args) {
   unsigned long cloud_start_time, gc_end_time, stt_end_time, ai_end_time, duration;  // for delay
 
+  record_init();
   while (1) {
-    delete_rec_file();
-    record_init();
+    // delete_rec_file();
+    Serial.println("=================================Record start!=================================");
     record();
     Serial.println("Record end!");
 
