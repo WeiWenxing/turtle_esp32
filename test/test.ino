@@ -11,7 +11,7 @@ const char* password = "mangdang";
 #define I2S_LRC 15   // Left/Right Clock
 
 Audio audio;
-String baseURL = "https://api.voicerss.org/?key=2ab6d13d5e3d430a91406018dfa44c93&hl=en-us&c=mp3&f=16khz_8bit_mono&src=";
+const String baseURL = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=";
 // String audioFormat = "&c=mp3&f=16khz_8bit_mono";
 
 
@@ -37,11 +37,21 @@ String encodeText(const String& text) {
 int countWords(const String& text) {
   int count = 1;
   for (int i = 0; i < text.length(); i++) {
-    if (text.charAt(i) == '+') {
+    if (text.charAt(i) == '+' || text.charAt(i) == ' ' || text.charAt(i) == '%') {
       count++;
     }
   }
   return count;
+}
+
+String removeNewlines(String text) {
+  int index = 0;
+  index = text.indexOf('\\n');
+  Serial.println(index);
+  while ((index = text.indexOf('\\n')) != -1) {
+    text = text.substring(0, index) + text.substring(index + 1);
+  }
+  return text;
 }
 
 void setup() {
@@ -70,17 +80,23 @@ void setup() {
 
       if (text.length() > 0) {
         audio.stopSong();
+        // text = removeNewlines(text);
+        text.replace("\\n", "");
+        Serial.print("final text: ");
+        Serial.println(text);
         String encodedText = encodeText(text);
+        Serial.print("encodedText: ");
+        Serial.println(encodedText);
 
-        // String audioURL = baseURL + encodedText;
-        String audioURL = text;
+        String audioURL = baseURL + encodedText;
+        // String audioURL = text;
         Serial.println("生成的URL: " + audioURL);
         audio.connecttohost(audioURL.c_str());
         file_duration = audio.getAudioFileDuration();
         Serial.print("File Duration: ");
         Serial.println(file_duration);
         split_time = millis();
-        internal = 500 * countWords(text);
+        internal = 400 * countWords(text);
         Serial.print("internal: ");
         Serial.println(internal);
       }
@@ -92,9 +108,9 @@ void setup() {
     unsigned long curtime = millis();
     if (curtime - split_time > internal) {
       split_time = curtime;
-      cur_audio_time = audio.getAudioCurrentTime();
-      Serial.print("cur_audio_time: ");
-      Serial.println(cur_audio_time);
+      // cur_audio_time = audio.getAudioCurrentTime();
+      // Serial.print("cur_audio_time: ");
+      // Serial.println(cur_audio_time);
       audio.stopSong();
     }
   }

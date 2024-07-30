@@ -47,9 +47,11 @@ void tts(String text) {
   //audio.setVolume(21); // 设置音量级别 (0-100)
 
   // 编码文本并过滤掉非字母数字字符
-  text.replace("\n", ""); // delete all "\n"
-  String encodedText = encodeText(text);
+  text.replace("\\n", ""); // delete all "\n"
   Serial.print("final text: ");
+  Serial.println(text);
+  String encodedText = encodeText(text);
+  Serial.print("encoded text: ");
   Serial.println(encodedText);
 
   // 生成音频 URL
