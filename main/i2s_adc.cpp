@@ -7,8 +7,6 @@
 #include <driver/gpio.h>
 
 const int headerSize = 44;
-i2s_chan_handle_t rx_handle;
-File file;
 
 void wavHeader(byte* header, int wavSize) {
   header[0] = 'R';
@@ -99,22 +97,34 @@ void listSPIFFS(void) {
   delay(1000);
 }
 
-void SPIFFSInit() {
+void i2s_adc_data_scale(uint8_t* d_buff, uint8_t* s_buff, uint32_t len) {
+  uint32_t j = 0;
+  uint32_t dac_value = 0;
+  for (int i = 0; i < len; i += 2) {
+    dac_value = ((((uint16_t)(s_buff[i + 1] & 0xf) << 8) | ((s_buff[i + 0]))));
+    d_buff[j++] = 0;
+    d_buff[j++] = dac_value * 256 / 2048;
+  }
+}
+
+void record() {
+  // prepare file
   if (!SPIFFS.begin(true)) {
     Serial.println("SPIFFS initialisation failed!");
     while (1) yield();
   }
-  file = SPIFFS.open(filename, FILE_WRITE);
+  SPIFFS.remove(filename);
+  File file = SPIFFS.open(filename, FILE_WRITE);
   if (!file) {
     Serial.println("File is not available!");
   }
   byte header[headerSize];
   wavHeader(header, FLASH_RECORD_SIZE);
   file.write(header, headerSize);
-  listSPIFFS();
-}
 
-void i2sInit() {
+  // config i2s
+  i2s_chan_handle_t* rx_handle = nullptr;
+  rx_handle = new i2s_chan_handle_t();
   i2s_chan_config_t chan_cfg = {
     .id = I2S_NUM_0,
     .role = I2S_ROLE_MASTER,
@@ -122,7 +132,7 @@ void i2sInit() {
     .dma_frame_num = 1024,
     .auto_clear = true,
   };
-  i2s_new_channel(&chan_cfg, NULL, &rx_handle);
+  i2s_new_channel(&chan_cfg, NULL, rx_handle);
 
   i2s_std_config_t std_cfg = {
     .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(I2S_SAMPLE_RATE),
@@ -141,43 +151,8 @@ void i2sInit() {
     },
   };
   std_cfg.slot_cfg.slot_mask = I2S_STD_SLOT_RIGHT;
-  i2s_channel_init_std_mode(rx_handle, &std_cfg);
-  // i2s_config_t i2s_config = {
-  //   .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
-  //   .sample_rate = I2S_SAMPLE_RATE,
-  //   .bits_per_sample = i2s_bits_per_sample_t(I2S_SAMPLE_BITS),
-  //   .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
-  //   .communication_format = i2s_comm_format_t(I2S_COMM_FORMAT_I2S | I2S_COMM_FORMAT_I2S_MSB),
-  //   .intr_alloc_flags = 0,
-  //   .dma_buf_count = 64,
-  //   .dma_buf_len = 1024,
-  //   .use_apll = 1
-  // };
-  // i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
-  // const i2s_pin_config_t pin_config = {
-  //   .bck_io_num = I2S_SCK,
-  //   .ws_io_num = I2S_WS,
-  //   .data_out_num = -1,
-  //   .data_in_num = I2S_SD
-  // };
-  // i2s_set_pin(I2S_PORT, &pin_config);
-}
-
-void i2s_adc_data_scale(uint8_t* d_buff, uint8_t* s_buff, uint32_t len) {
-  uint32_t j = 0;
-  uint32_t dac_value = 0;
-  for (int i = 0; i < len; i += 2) {
-    dac_value = ((((uint16_t)(s_buff[i + 1] & 0xf) << 8) | ((s_buff[i + 0]))));
-    d_buff[j++] = 0;
-    d_buff[j++] = dac_value * 256 / 2048;
-  }
-}
-
-void record() {
-  i2sInit();
-  i2s_channel_enable(rx_handle);
-  SPIFFS.remove(filename);
-  SPIFFSInit();
+  i2s_channel_init_std_mode(*rx_handle, &std_cfg);
+  i2s_channel_enable(*rx_handle);
   int i2s_read_len = I2S_READ_LEN;
   int flash_wr_size = 0;
   size_t bytes_read;
@@ -187,13 +162,13 @@ void record() {
 
   // i2s_read(I2S_PORT, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
   // i2s_read(I2S_PORT, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
-  i2s_channel_read(rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
-  i2s_channel_read(rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+  i2s_channel_read(*rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+  i2s_channel_read(*rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
 
   Serial.println(" *** Recording Start *** ");
   while (flash_wr_size < FLASH_RECORD_SIZE) {
     // i2s_read(I2S_PORT, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
-    i2s_channel_read(rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
+    i2s_channel_read(*rx_handle, (void*)i2s_read_buff, i2s_read_len, &bytes_read, portMAX_DELAY);
     i2s_adc_data_scale(flash_write_buff, (uint8_t*)i2s_read_buff, i2s_read_len);
     file.write((const byte*)flash_write_buff, i2s_read_len);
     flash_wr_size += i2s_read_len;
@@ -207,8 +182,10 @@ void record() {
   free(flash_write_buff);
   flash_write_buff = NULL;
 
-  i2s_channel_disable(rx_handle);
-  i2s_del_channel(rx_handle);
+  i2s_channel_disable(*rx_handle);
+  i2s_del_channel(*rx_handle);
+  delete rx_handle;
+  rx_handle = nullptr;
 
   listSPIFFS();
 }
