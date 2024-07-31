@@ -88,8 +88,8 @@ void setup() {
         Serial.print("encodedText: ");
         Serial.println(encodedText);
 
-        String audioURL = baseURL + encodedText;
-        // String audioURL = text;
+        // String audioURL = baseURL + encodedText;
+        String audioURL = text;
         Serial.println("生成的URL: " + audioURL);
         audio.connecttohost(audioURL.c_str());
         file_duration = audio.getAudioFileDuration();

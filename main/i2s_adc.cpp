@@ -116,12 +116,12 @@ void SPIFFSInit() {
 
 void i2sInit() {
   i2s_chan_config_t chan_cfg = {
-    .id = I2S_NUM_AUTO,
+    .id = I2S_NUM_0,
     .role = I2S_ROLE_MASTER,
     .dma_desc_num = 64,
     .dma_frame_num = 1024,
-    .auto_clear = false,
-  }
+    .auto_clear = true,
+  };
   i2s_new_channel(&chan_cfg, NULL, &rx_handle);
 
   i2s_std_config_t std_cfg = {
@@ -135,13 +135,13 @@ void i2sInit() {
       .din = GPIO_NUM_4,
       .invert_flags = {
         .mclk_inv = false,
-        .bclk_inv = false,
-        .ws_inv = false,
+        .bclk_inv = true,
+        .ws_inv = true,
       },
     },
   };
+  std_cfg.slot_cfg.slot_mask = I2S_STD_SLOT_RIGHT;
   i2s_channel_init_std_mode(rx_handle, &std_cfg);
-  i2s_channel_enable(rx_handle);
   // i2s_config_t i2s_config = {
   //   .mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
   //   .sample_rate = I2S_SAMPLE_RATE,
@@ -174,6 +174,7 @@ void i2s_adc_data_scale(uint8_t* d_buff, uint8_t* s_buff, uint32_t len) {
 }
 
 void record() {
+  i2s_channel_enable(rx_handle);
   SPIFFS.remove(filename);
   SPIFFSInit();
   int i2s_read_len = I2S_READ_LEN;
@@ -204,6 +205,8 @@ void record() {
   i2s_read_buff = NULL;
   free(flash_write_buff);
   flash_write_buff = NULL;
+
+  // i2s_channel_disable(rx_handle);
 
   listSPIFFS();
 }

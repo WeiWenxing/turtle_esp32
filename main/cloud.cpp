@@ -6,11 +6,12 @@
 #include <SPIFFS.h>
 #include "params.h"
 
-const char* accessToken = "ya29.a0AXooCgt5_phZodupTgh0BvDLOSSYrbFBbYbNxT1zccv_g-RzX3KvQBZUg8ldxgHK3sGnu1XrU8VMpYpwgXuSpat1jsRkVJTsFO7Ky_gnTKU2FCu2IDAk5QhfIjF5snT7F0aBv3orX8kqeZxarg4VnYvyqHdzv6a1e8JUaCgYKAW8SARESFQHGX2MiG1WzrrP8S0m5Q-h6L8QKWg0171";
+const char* accessToken = "ya29.c.c0ASRK0GZ9QSkFs91Ea-Bgk1EDxs5v7WLzVLEpPvorVtWtyPDWFhUOnKA5SiecHZYefwiSEXfjxQGTrgGkZnaBO6UzTEHXgb-AYqYfAziyivA17UuOFTVcz19Gydh4_-PP8XQyHBhqAdmc0t9J4jDomYv04Hv-1-XLyAcBIjQPr1BAitcvVfLeTq-9lqPqHXhp4LxI6MiFOyRSCS0V5fs2fy43JDcVJ5wxVTFqY4sIi0JvLS8weCZvGKcn9Bv1_oHgI6q3N-XaY-XPoVEwKFztG1VPk_2pUPMhHFOF6H05Miq_D1AJCMd07Sh50rCCXYvcAlchYa8_at7fqY4J7h07Qv8WOG7m-RjD4TCjHbis6Z7YJNJLEpyA97_R2AT387PonzMkpRJ2w5VI_njrzMB9Xb8BIbYnzO3JhxnMOZYihzhV-R_2mtwWQWy_ldyhB48ltUWaBihJRXutrMaMn-QFScQOczqwO6OicBo7fyM2_v7xXhhu3Ofkk_yrQWqplSObYff11uquxgSn3JwQJiasd6w_fpBlVocuhfjikvWqjufFxSU0mSyiMs3ht45F25crfo1xndmWo27_-mOBwx0fssSF-_9_d1QIaaXZb7zvkfhyucZOWZdxFqZcknztWezqZaQrO9ywyX4fI81d6wQROx6vF5F56ftJsk8xqd9sw5z0inhcqWy9QVgv5zXhotUns6i0jcxR8VbyXhdmOh_51vkv84f-wMXstwh-ZxM1i2XsXUw9zw_imI5v9d29n0-rySuFIQWMfn55J91ngaq_yX3R3clsenv0BsO2myX-r3asbWt0-RB8f8VYF6XqurQiw0tOhbR0naBS26J6_9UdjW-m02R3MbFyhfalafuB9eS9-9Z256QvoUjpQhSgak2mj5cjIze1v8sIcX5oZ7sutobXFe-J2l8O5Fyu5bSs5iw1a5W_iJteVROQSrwtunr9Svoqi02-d82cqc4ekZ5-hqn0tWwFt4MwcQSmWibM-IoSuORaJ5Q-gn7";
+
 // STT Config
 const char* bucketName = "mangdang_voice";
 const char* audioContent = "gs://mangdang_voice/audio.wav";
-const char* gcAdd = "https://storage.googleapis.com/upload/storage/v1/b/mangdang_voice/o?uploadType=media&name=audio.wav";
+const char* gcAdd = "https://storage.googleapis.com/upload/storage/v1/b/mangdang_voice/o?uploadType=media&name=test2.wav";
 
 // Gemini API Config
 const char* apiURL = "https://us-central1-aiplatform.googleapis.com/v1/projects/modern-rex-420404/locations/us-central1/publishers/google/models/gemini-1.5-flash:streamGenerateContent?alt=sse";
