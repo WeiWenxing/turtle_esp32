@@ -11,6 +11,7 @@
 #define I2S_LRC 15   // Left/Right Clock
 const String baseURL = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=";
 
+Audio *audio = nullptr;
 
 bool isAlphaNumeric(char c) {
   return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ' ') || (c == ',') || (c == '.') || (c == '?') || (c == '!');
@@ -42,8 +43,8 @@ int countWords(const String& text) {
 }
 
 void tts(String text) {
-  Audio audio;
-  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+  audio = new Audio();
+  audio->setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
   //audio.setVolume(21); // 设置音量级别 (0-100)
 
   // 编码文本并过滤掉非字母数字字符
@@ -60,17 +61,19 @@ void tts(String text) {
   Serial.println(audioURL);
 
   // 连接并播放音频
-  audio.connecttohost(audioURL.c_str());
+  audio->connecttohost(audioURL.c_str());
   unsigned long start_time = millis();
   int max_duration = 400 * countWords(text);
   Serial.print("max_duration: ");
   Serial.println(max_duration);
 
   while (1) {
-    audio.loop();
+    audio->loop();
     delay(1);
     if (millis() - start_time > max_duration) {
-      audio.stopSong();
+      audio->stopSong();
+      delete audio;
+      audio = nullptr;
       Serial.println("speech end!");
       break;
     }

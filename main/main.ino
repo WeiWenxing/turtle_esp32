@@ -13,8 +13,7 @@ void record_task(void* args) {
   unsigned long cloud_start_time, gc_end_time, stt_end_time, ai_end_time, duration;  // for delay
 
   record_init();
-  // while (1) {
-    delete_rec_file();
+  while (1) {
     Serial.println("=================================Record start!=================================");
     record();
     Serial.println("Record end!");
@@ -49,7 +48,7 @@ void record_task(void* args) {
       }
     }
     // tts("I  am doing well, thank you for asking! I am a large language model,  so I don't have a name in the traditional sense. You can call me Amy");
-  // }
+  }
   delay(5000);
   vTaskDelete(NULL);
 }

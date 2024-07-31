@@ -174,6 +174,7 @@ void i2s_adc_data_scale(uint8_t* d_buff, uint8_t* s_buff, uint32_t len) {
 }
 
 void record() {
+  i2sInit();
   i2s_channel_enable(rx_handle);
   SPIFFS.remove(filename);
   SPIFFSInit();
@@ -206,13 +207,13 @@ void record() {
   free(flash_write_buff);
   flash_write_buff = NULL;
 
-  // i2s_channel_disable(rx_handle);
+  i2s_channel_disable(rx_handle);
+  i2s_del_channel(rx_handle);
 
   listSPIFFS();
 }
 
 void record_init() {
-  i2sInit();
 }
 
 void delete_rec_file() {
