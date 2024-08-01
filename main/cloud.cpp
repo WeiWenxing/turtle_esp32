@@ -53,7 +53,7 @@ void uploadFile() {
   Serial.println("File closed and HTTP connection ended");
 }
 
-const  String speechRequestData = "{\"config\": {\"encoding\":\"LINEAR16\",\"languageCode\":\"en-US\",\"enableWordTimeOffsets\":false},\"audio\":{\"uri\":\"gs://mangdang_voice/audio.wav\"}}";
+const String speechRequestData = "{\"config\": {\"encoding\":\"LINEAR16\",\"languageCode\":\"en-US\",\"enableWordTimeOffsets\":false},\"audio\":{\"uri\":\"gs://mangdang_voice/audio.wav\"}}";
 String speechToText() {
   Serial.println("Speech to text start.");
   HTTPClient _http;
