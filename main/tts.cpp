@@ -11,7 +11,7 @@
 #define I2S_LRC 15   // Left/Right Clock
 const String baseURL = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=";
 
-Audio *audio = nullptr;
+Audio* audio = nullptr;
 
 bool isAlphaNumeric(char c) {
   return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ' ') || (c == ',') || (c == '.') || (c == '?') || (c == '!');
@@ -48,7 +48,7 @@ void tts(String text) {
   //audio.setVolume(21); // 设置音量级别 (0-100)
 
   // 编码文本并过滤掉非字母数字字符
-  text.replace("\\n", ""); // delete all "\n"
+  text.replace("\\n", "");  // delete all "\n"
   Serial.print("final text: ");
   Serial.println(text);
   String encodedText = encodeText(text);
@@ -72,10 +72,10 @@ void tts(String text) {
     delay(1);
     if (millis() - start_time > max_duration) {
       audio->stopSong();
-      delete audio;
-      audio = nullptr;
       Serial.println("speech end!");
       break;
     }
   }
+  delete audio;
+  audio = nullptr;
 }
