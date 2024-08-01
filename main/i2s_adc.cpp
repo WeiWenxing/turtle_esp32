@@ -177,8 +177,8 @@ void record() {
     i2s_adc_data_scale(flash_write_buff, (uint8_t*)i2s_read_buff, i2s_read_len);
     file.write((const byte*)flash_write_buff, i2s_read_len);
     flash_wr_size += i2s_read_len;
-    Serial.println(flash_wr_size * 100 / FLASH_RECORD_SIZE);
-    Serial.print("%\n");
+    // Serial.print(flash_wr_size * 100 / FLASH_RECORD_SIZE);
+    // Serial.println("%");
   }
   file.close();
 
@@ -192,6 +192,6 @@ void record() {
   delete rx_handle;
   rx_handle = nullptr;
 
-  listSPIFFS();
+  // listSPIFFS();
 }
 

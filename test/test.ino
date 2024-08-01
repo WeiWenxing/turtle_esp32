@@ -10,7 +10,6 @@ const char* password = "mangdang";
 #define I2S_BCLK 16  // Bit Clock
 #define I2S_LRC 15   // Left/Right Clock
 
-Audio audio;
 const String baseURL = "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=";
 // String audioFormat = "&c=mp3&f=16khz_8bit_mono";
 
@@ -64,22 +63,27 @@ void setup() {
   }
   Serial.println("WiFi connected");
 
-  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-  //audio.setVolume(21); // Set volume level (0-100)
-  audio.setFileLoop(false);
 
   Serial.println("请输入要转换成语音的文字，然后按回车键：");
 
   int internal = 5000;
   unsigned long split_time = millis();
   int file_duration, cur_audio_time;
+  Audio* audio = nullptr;
   while (1) {
     if (Serial.available() > 0) {
       String text = Serial.readStringUntil('\n');
       text.trim();  // 移除输入字符串两端的空格和换行符
 
       if (text.length() > 0) {
-        audio.stopSong();
+        if (audio) {
+          audio->stopSong();
+          delete audio;
+          audio = nullptr;
+        }
+        audio = new Audio();
+        audio->setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+        //audio.setVolume(21); // Set volume level (0-100)
         // text = removeNewlines(text);
         text.replace("\\n", "");
         Serial.print("final text: ");
@@ -91,8 +95,8 @@ void setup() {
         // String audioURL = baseURL + encodedText;
         String audioURL = text;
         Serial.println("生成的URL: " + audioURL);
-        audio.connecttohost(audioURL.c_str());
-        file_duration = audio.getAudioFileDuration();
+        audio->connecttohost(audioURL.c_str());
+        file_duration = audio->getAudioFileDuration();
         Serial.print("File Duration: ");
         Serial.println(file_duration);
         split_time = millis();
@@ -102,7 +106,8 @@ void setup() {
       }
     }
 
-    audio.loop();  // 必须反复调用以保持音频播放
+    if (audio)
+      audio->loop();  // 必须反复调用以保持音频播放
     delay(1);
 
     unsigned long curtime = millis();
@@ -111,7 +116,8 @@ void setup() {
       // cur_audio_time = audio.getAudioCurrentTime();
       // Serial.print("cur_audio_time: ");
       // Serial.println(cur_audio_time);
-      audio.stopSong();
+      if (audio)
+        audio->stopSong();
     }
   }
 }

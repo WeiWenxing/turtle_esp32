@@ -6,7 +6,7 @@
 #include <SPIFFS.h>
 #include "params.h"
 
-const char* accessToken = "ya29.c.c0ASRK0GZUqFdJL_qn5buJYHWhM9i1rgb3NxT3XMvI4DaI3S4gMoIuUK2pg_RZ3uzejwmTVo1xAZgmAjbuGtHRDaJs8j8gb7hMq9AlxAMsPqgS7cw_QFnblDuyqUOToNvjmVY-62TIuwbCc9B7iG5QFQMOTaNwLFZ2LgwZtUJ4X5ibKsZgs-KrRhSV8wZ6m2O7IKo8AjuYqVsx6TrLm-TZjtNIfAwCRcjvrrfbg5aC2kxzX1rc3hEF16VIxkphtXUGnMDEpt9VbV20jHg8EpJwp8_pq0uz-UftILFw4dWRXujsakj7qDSqwbijROWtIYVtwQgG2S6XFY8NVDY7I1TaFBa5ejYfYnKTp14i4KwDj01af97CO0DTTD0G384CdlQootnY0Fr4oJ-oiB5wr6B8_Yb1ldRvXqmtsjZglytr9rJVqJeJyjQcyp2JStkpjR4zl6BzivZuQ71Xxaz1Z6USBqcbqxlvOdajoq4mcJaskJSv6qdU9Jl_Bpc4FrdslJVyjvrk2I7p6OB16BzpV5kWaiigWeQtV1kndWaSt5X760eFsRb4R7QynJmu3UvMObj32m_Qcbc6df1fgnx8UOJ9tSw6rz2rmI3w6qk7JSeOlsli56ffftQhc63VfbX8v6SQhn3r7nFfcpiS2QIZI574qpk8bW7amdB8QbtVFWbO079kFxJt_k7giucolqrtdMiBcQ_ajV5seyv6iZwrlbqw7OMpQMcUhIib_h8zwfd9Bwp6VX1dgoRgs3nd1vZShp-ezxF095Oz5-_XO-JJZ1e7Q6zUlj5ay3hUtoShbxJfUltw_tBSF2t9z5Jtqk_qIrO6Y858BJteUZXk84gnWU4g-YddlSmYkaJg35gR8x4xzzZW8ck_xb4jgF5uXMQaazqqc6bwO2fupp30-ytho38aJdnow7SwlFhIlWVx6jdvF07sq4e452mlOgYqQZ9jsjFtXnRdp_mpx1i4fs2y172O56B1cgpZIYOiRu42WxXsY3nJM0MVqgkzqhu";
+const char* accessToken = "ya29.c.c0ASRK0GZDcx6Gc3B24SjUVb1Zw6R1F7cU8jN5W-EaNmZFG3Q2YsKeSu3iI7wgFeEqFP3uNGjUY5GefbY_rZE-iBxqPHfjfTcoRyRIRLpH0f6jpGqThw4_47Zyitp7eFkJA3MwhS25Gb8jkfPnJvgvszFccVlj5rywRFsC9cNz-NEqU9rTi1AdoqIgrHqBJtyVUKLnFHhZDEgX21a9G_jaHvioA2m0fkcPYh6C_Ov9SlRwXqIPpmTcEMHoJgyQKFQtqjQs1TGUCr2Lu2UlsFL1-GqeEz6PLwNwFW-XfUtLAHbNhxuNedGkb7EQZJaEFuez8KuCOhncuqTSBmlAVEH_ejCeqXBiZNhDy5SvKSM1sMd7jCp-QSFOkigT384KYb0sttagBu6vBr4Rh279JJ84frW94e0M-RV2iV3u26OWnpk7zxi1Xmgp-3VvmgFxj5OQfQ5XYbtOs78voSh4mlnm50zsBml1iVcpa9_8rh2dVuzyO9B0lk8_Jb1FlnxylM73jzZ1y25w-V07xeRBlk8B1397QZkbFoMhJqqqkRWs2jywsdtxcgsp-5ZUkkRpFwqmRjQ8uOiSiJlz7RpFyXvQ_isxQ8BUbh-g2sryVJxZuvlQaon-dwB1YaJkMu3hzxJeo44Jugop2htaOnlJS-i4r_a2YRks85ag3gY6eUtZ8j4Zx7_Vkk8-buzZVoj4Wg6ud1kchnVs9znB3dm86Ujkgu-9Z-_zMd7Fv_9zaXiZIXa1lbbipf6Sjp72nxvJ4FwbszrcceY9rbwIqoXRwYsUnU29wWyM7dV7aQ-e1q9WJ65JwS6SyIBOXSU7rIM-uhJkI7Mbm_3XQOM_swIiJoa8gcq1if9V7Wenwxaupb5M3pOVuO1JVIBaUXRic7RI8R2J5o5BkmXcyQoUbSYRUlnJz0RxJvVk6em9e6svSp3M2Q7ZSkb-gSl3ws41F6WO3ukrRUicsFMaoWOX_epoiw5U12MfFOslmSMb5M8JuttMhV-sOgJe9IaaBQB";
 
 // STT Config
 const char* bucketName = "mangdang_voice";
@@ -16,17 +16,18 @@ const char* gcAdd = "https://storage.googleapis.com/upload/storage/v1/b/mangdang
 // Gemini API Config
 const char* apiURL = "https://us-central1-aiplatform.googleapis.com/v1/projects/modern-rex-420404/locations/us-central1/publishers/google/models/gemini-1.5-flash:streamGenerateContent?alt=sse";
 
-HTTPClient _http;
-
 
 void uploadFile() {
   Serial.println("Opening file...");
   File file = SPIFFS.open(filename, "r");
   if (!file) {
     Serial.println("Failed to open file");
+    file.close();
     return;
   }
   Serial.println("File opened successfully");
+
+  HTTPClient _http;
 
   // String url = "https://storage.googleapis.com/upload/storage/v1/b/" + String(_bucketName) + "/o?uploadType=media&name=audio.wav";
   Serial.print("Connecting to URL: ");
@@ -36,12 +37,13 @@ void uploadFile() {
   _http.addHeader("Content-Type", "application/octet-stream");
 
   Serial.println("Sending POST request...");
+  Serial.println(file.size());
   int httpCode = _http.sendRequest("POST", &file, file.size());
   Serial.println("POST request sent");
 
   if (httpCode > 0) {
     String response = _http.getString();
-    Serial.println("Response: " + response);
+    // Serial.println("Response: " + response);
   } else {
     Serial.println("Error on file upload, HTTP code: " + String(httpCode));
   }
@@ -51,7 +53,11 @@ void uploadFile() {
   Serial.println("File closed and HTTP connection ended");
 }
 
+const  String speechRequestData = "{\"config\": {\"encoding\":\"LINEAR16\",\"languageCode\":\"en-US\",\"enableWordTimeOffsets\":false},\"audio\":{\"uri\":\"gs://mangdang_voice/audio.wav\"}}";
 String speechToText() {
+  Serial.println("Speech to text start.");
+  HTTPClient _http;
+
   _http.begin("https://speech.googleapis.com/v1/speech:recognize");
   _http.addHeader("Content-Type", "application/json");
   _http.addHeader("Authorization", "Bearer " + String(accessToken));
@@ -61,16 +67,17 @@ String speechToText() {
   _http.addHeader("Connection", "keep-alive");
   _http.addHeader("x-goog-user-project", "modern-rex-420404");
 
-  String httpRequestData = "{\"config\": {\"encoding\":\"LINEAR16\",\"languageCode\":\"en-US\",\"enableWordTimeOffsets\":false},\"audio\":{\"uri\":\"gs://mangdang_voice/audio.wav\"}}";
-  int httpResponseCode = _http.POST(httpRequestData);
+  Serial.println("Speech request.");
+  Serial.println("Speech request post start.");
+  int httpResponseCode = _http.POST(speechRequestData);
 
   Serial.print("HTTP Response code: ");
   Serial.println(httpResponseCode);
 
   if (httpResponseCode == 200) {
     String response = _http.getString();
-    Serial.println("Response: ");
-    Serial.println(response);
+    // Serial.println("Response: ");
+    // Serial.println(response);
 
     int transcriptIndexStart = response.indexOf("\"transcript\": \"") + 15;
     int transcriptIndexEnd = response.indexOf("\"", transcriptIndexStart);
@@ -92,36 +99,39 @@ String speechToText() {
 }
 
 String generateJsonString(String text) {
-    return "{"
-        "\"contents\": ["
-            "{"
-            "\"role\": \"USER\","
-            "\"parts\": { \"text\": \"Now, you are a small female robo turtle, your name is Amy. You will be a helpful AI assistent. Your LLM api is connected to STT and TTS models so you are able to hear the user.\" }"
-            "},"
-            "{"
-            "\"role\": \"MODEL\","
-            "\"parts\": { \"text\": \"OK, I know.\" }"
-            "},"
-            "{"
-            "\"role\": \"USER\","
-            "\"parts\": { \"text\": \"" + text + "\" }"
-            "}"
-        "]"
-        ",\"safety_settings\": {"
-            "\"category\": \"HARM_CATEGORY_SEXUALLY_EXPLICIT\","
-            "\"threshold\": \"BLOCK_LOW_AND_ABOVE\""
-        "},"
-        "\"generation_config\": {"
-            "\"temperature\": 0.2,"
-            "\"topP\": 0.8,"
-            "\"topK\": 40,"
-            "\"maxOutputTokens\": 50"
-        "}"
-        "}";
+  return "{"
+         "\"contents\": ["
+         "{"
+         "\"role\": \"USER\","
+         "\"parts\": { \"text\": \"Now, you are a small female robo turtle, your name is Amy. You will be a helpful AI assistent. Your LLM api is connected to STT and TTS models so you are able to hear the user.\" }"
+         "},"
+         "{"
+         "\"role\": \"MODEL\","
+         "\"parts\": { \"text\": \"OK, I know.\" }"
+         "},"
+         "{"
+         "\"role\": \"USER\","
+         "\"parts\": { \"text\": \""
+         + text + "\" }"
+                  "}"
+                  "]"
+                  ",\"safety_settings\": {"
+                  "\"category\": \"HARM_CATEGORY_SEXUALLY_EXPLICIT\","
+                  "\"threshold\": \"BLOCK_LOW_AND_ABOVE\""
+                  "},"
+                  "\"generation_config\": {"
+                  "\"temperature\": 0.2,"
+                  "\"topP\": 0.8,"
+                  "\"topK\": 40,"
+                  "\"maxOutputTokens\": 50"
+                  "}"
+                  "}";
 }
 
 
 String llm_response(String transcript) {
+  HTTPClient _http;
+
   Serial.println("开始发送 HTTP POST 请求...");
   _http.begin(apiURL);
   _http.addHeader("Content-Type", "application/json");
@@ -130,18 +140,18 @@ String llm_response(String transcript) {
   // 构建 JSON 数据
   // String jsonData = "{\"contents\": {\"role\": \"user\", \"parts\": [{\"text\": \"" + transcript + "\"}]}}";
   String jsonData = generateJsonString(transcript);
-  Serial.print("发送的 JSON 数据: ");
-  Serial.println(jsonData);
+  // Serial.print("发送的 JSON 数据: ");
+  // Serial.println(jsonData);
 
   int httpResponseCode = _http.POST(jsonData);
 
   String geminiResponseText = "";
   if (httpResponseCode > 0) {
     String response = _http.getString();
-    Serial.print("HTTP 响应代码: ");
-    Serial.println(httpResponseCode);
-    Serial.print("响应内容: ");
-    Serial.println(response);
+    // Serial.print("HTTP 响应代码: ");
+    // Serial.println(httpResponseCode);
+    // Serial.print("响应内容: ");
+    // Serial.println(response);
 
     int startIndex = 0;
     while (true) {
