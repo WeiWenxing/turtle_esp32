@@ -13,8 +13,6 @@
 #define FLASH_RECORD_SIZE (I2S_CHANNEL_NUM * I2S_SAMPLE_RATE * I2S_SAMPLE_BITS / 8 * RECORD_TIME)
 
 
-void record_init();
 void record();
-void delete_rec_file();
 
 #endif

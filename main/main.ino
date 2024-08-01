@@ -8,11 +8,9 @@
 const char* ssid = "Mangdang";
 const char* password = "mangdang";
 
+unsigned long cloud_start_time, gc_end_time, stt_end_time, ai_end_time, duration;  // for delay
 
 void record_task(void* args) {
-  unsigned long cloud_start_time, gc_end_time, stt_end_time, ai_end_time, duration;  // for delay
-
-  record_init();
   while (1) {
     Serial.println("=================================Record start!=================================");
     record();
@@ -49,8 +47,8 @@ void record_task(void* args) {
     }
     // tts("I  am doing well, thank you for asking! I am a large language model,  so I don't have a name in the traditional sense. You can call me Amy");
   }
-  delay(5000);
-  vTaskDelete(NULL);
+  // delay(5000);
+  // vTaskDelete(NULL);
 }
 
 
@@ -67,7 +65,8 @@ void setup() {
   Serial.println("\nConnected");
 
   if (WiFi.status() == WL_CONNECTED) {
-    xTaskCreate(record_task, "record_task", 1024 * 8, NULL, 1, NULL);
+    // xTaskCreate(record_task, "record_task", 1024 * 8, NULL, 1, NULL);
+    record_task((void*)NULL);
   } else {
     Serial.println("WiFi Disconnected");
   }

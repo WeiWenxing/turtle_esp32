@@ -109,6 +109,7 @@ void i2s_adc_data_scale(uint8_t* d_buff, uint8_t* s_buff, uint32_t len) {
 
 void record() {
   // prepare file
+  Serial.println("prepare file!");
   if (!SPIFFS.begin(true)) {
     Serial.println("SPIFFS initialisation failed!");
     while (1) yield();
@@ -123,6 +124,7 @@ void record() {
   file.write(header, headerSize);
 
   // config i2s
+  Serial.println("config i2s!");
   i2s_chan_handle_t* rx_handle = nullptr;
   rx_handle = new i2s_chan_handle_t();
   i2s_chan_config_t chan_cfg = {
@@ -153,6 +155,9 @@ void record() {
   std_cfg.slot_cfg.slot_mask = I2S_STD_SLOT_RIGHT;
   i2s_channel_init_std_mode(*rx_handle, &std_cfg);
   i2s_channel_enable(*rx_handle);
+
+  // start record
+  Serial.println("start record");
   int i2s_read_len = I2S_READ_LEN;
   int flash_wr_size = 0;
   size_t bytes_read;
@@ -190,9 +195,3 @@ void record() {
   listSPIFFS();
 }
 
-void record_init() {
-}
-
-void delete_rec_file() {
-  SPIFFS.remove(filename);
-}
