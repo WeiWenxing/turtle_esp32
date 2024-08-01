@@ -8,6 +8,56 @@
 
 const int headerSize = 44;
 
+void createWavHeader(byte* header, int channel_num, int sample_rate, int sample_bits, int audio_duration) {
+  header[0] = 'R';
+  header[1] = 'I';
+  header[2] = 'F';
+  header[3] = 'F';
+  unsigned int wavSize = channel_num * sample_rate * sample_bits * audio_duration / 8;
+  unsigned int fileSize = wavSize + headerSize - 8;
+  header[4] = (byte)(fileSize & 0xFF);
+  header[5] = (byte)((fileSize >> 8) & 0xFF);
+  header[6] = (byte)((fileSize >> 16) & 0xFF);
+  header[7] = (byte)((fileSize >> 24) & 0xFF);
+  header[8] = 'W';
+  header[9] = 'A';
+  header[10] = 'V';
+  header[11] = 'E';
+  header[12] = 'f';
+  header[13] = 'm';
+  header[14] = 't';
+  header[15] = ' ';
+  header[16] = 0x10;
+  header[17] = 0x00;
+  header[18] = 0x00;
+  header[19] = 0x00;
+  header[20] = 0x01;
+  header[21] = 0x00;
+  header[22] = (byte)channel_num;
+  header[23] = 0x00;
+  header[24] = (byte)(sample_rate & 0xff);
+  header[25] = (byte)((sample_rate >> 8) & 0xff);
+  header[26] = (byte)((sample_rate >> 16) & 0xff);
+  header[27] = (byte)((sample_rate >> 24) & 0xff);
+  unsigned byte_rate = channel_num * sample_rate * sample_bits / 8;
+  header[28] = (byte)(byte_rate & 0xff);
+  header[29] = (byte)((byte_rate >> 8) & 0xff);
+  header[30] = (byte)((byte_rate >> 16) & 0xff);
+  header[31] = (byte)((byte_rate >> 24) & 0xff);
+  header[32] = (byte)(channel_num * sample_bits / 8);
+  header[33] = 0x00;
+  header[34] = (byte)sample_bits;
+  header[35] = 0x00;
+  header[36] = 'd';
+  header[37] = 'a';
+  header[38] = 't';
+  header[39] = 'a';
+  header[40] = (byte)(wavSize & 0xFF);
+  header[41] = (byte)((wavSize >> 8) & 0xFF);
+  header[42] = (byte)((wavSize >> 16) & 0xFF);
+  header[43] = (byte)((wavSize >> 24) & 0xFF);
+}
+
 void wavHeader(byte* header, int wavSize) {
   header[0] = 'R';
   header[1] = 'I';
@@ -120,7 +170,9 @@ void record() {
     Serial.println("File is not available!");
   }
   byte header[headerSize];
-  wavHeader(header, FLASH_RECORD_SIZE);
+  // wavHeader(header, FLASH_RECORD_SIZE);
+  createWavHeader(header, I2S_CHANNEL_NUM, I2S_SAMPLE_RATE, I2S_SAMPLE_BITS, RECORD_TIME);
+
   file.write(header, headerSize);
 
   // config i2s
@@ -131,7 +183,7 @@ void record() {
     .id = I2S_NUM_0,
     .role = I2S_ROLE_MASTER,
     .dma_desc_num = 64,
-    .dma_frame_num = 1024,
+    .dma_frame_num = I2S_FRAME_NUM,
     .auto_clear = true,
   };
   i2s_new_channel(&chan_cfg, NULL, rx_handle);
@@ -194,4 +246,3 @@ void record() {
 
   // listSPIFFS();
 }
-
