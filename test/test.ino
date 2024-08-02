@@ -71,7 +71,9 @@ void setup() {
   unsigned long split_time = millis();
   int file_duration, cur_audio_time;
   Audio* audio = nullptr;
-  Servo_Init();
+  // Servo_Init();
+  MoveInit();
+  MoveReset();
   while (1) {
     if (Serial.available() > 0) {
       String text = Serial.readStringUntil('\n');
@@ -79,10 +81,36 @@ void setup() {
 
       if (text.length() > 0) {
         if (text == "come") {
-          Servo_forward();
+          MoveForward();
           continue;
         } else if (text == "init") {
-          Servo_Init();
+          MoveInit();
+          continue;
+        } else if (text == "reset") {
+          MoveReset();
+          continue;
+        } else if (text.startsWith("leftfront")) {
+          int index1 = text.indexOf(' ', 10);
+          Serial.println(index1);
+          int index2 = text.indexOf(' ', index1 + 1);
+          Serial.println(index1);
+
+          float ange = text.substring(10, index1).toFloat();
+          Serial.print("ange: ");
+          Serial.println(ange);
+
+          int walktime = text.substring(index1 + 1, index2).toInt();
+          Serial.print("walktime: ");
+          Serial.println(walktime);
+
+
+          unsigned start_time = millis();
+          servoLeftFront(ange, walktime);
+          unsigned end_time = millis();
+          int duration = end_time - start_time;
+          Serial.print("move(), took: ");
+          Serial.println(duration);
+          Serial.println("servoLeftFront end: ");
           continue;
         }
         if (audio) {

@@ -57,7 +57,7 @@ void servo(float AngE1, float AngE2, float AngE3, float AngE4, int timewalk) {
     servo3.write(input_ang(3, AngS[3] + AngTemp[3] * i / timewalk));
     servo4.write(input_ang(4, AngS[4] + AngTemp[4] * i / timewalk));
 
-    delay(1);
+    delay(10);
   }
   AngS[1] = AngE1;
   AngS[2] = AngE2;
@@ -65,9 +65,9 @@ void servo(float AngE1, float AngE2, float AngE3, float AngE4, int timewalk) {
   AngS[4] = AngE4;
 }
 
-
-
-void Servo_Init() {
+// void Servo_Offset();
+void MoveInit() {
+  Serial.println("MoveInit start");
   preferences.begin("memory", false);
 
   servo1.attach(servo1Pin, minUs, maxUs);
@@ -76,76 +76,115 @@ void Servo_Init() {
   servo4.attach(servo4Pin, minUs, maxUs);
   servo5.attach(servo5Pin, minUs, maxUs);
 
+  Serial.println("MoveInit end");
+}
+
+void MoveReset() {
+  Serial.println("MoveReset start");
   osang[1] = preferences.getInt("LFAngle", osang[1]);
   osang[2] = preferences.getInt("LBAngle", osang[2]);
   osang[3] = preferences.getInt("RFAngle", osang[3]);
   osang[4] = preferences.getInt("RBAngle", osang[4]);
   for (int i = 0; i < 4; i++) {
     AngS[i] = osang[i];
+    Serial.print("MoveReset osang[i]");
+    Serial.println(osang[i]);
   }
 
+  Serial.println("MoveReset servo write");
   servo1.write(180 * (220 - osang[1]) / 260);
   servo2.write(180 * (40 - osang[2]) / 260);
   servo3.write(180 * (40 + osang[3]) / 260);
   servo4.write(180 * (220 + osang[4]) / 260);
+
+  Serial.println("MoveReset servo5");
   servo5.write(input_ang(5, 0));
-  delay(5000);
+  Serial.println("MoveReset end");
 }
 
-// void Servo_Offset() {
-//   int end = 1;
-//   int read_int;
-//   while(end) {
-//     int angle_text = Serial.read();
-//       Serial.print("\n\n\nInputed word: ");
-//       Serial.println(angle_text);
-//       if (isDigit(angle_text)) {
-//         switch (angle_text) {
-//           case 0:
-//             end = 0;
-//             break;
+void servoLeftFront(float ange, int timewalk) {
+  float angtmp = ange - AngS[1];
+  for (int i = 0; i < timewalk; i++) {
+    servo1.write(input_ang(1, AngS[1] + angtmp * i / timewalk));
+    delay(10);
+  }
+  AngS[1] = ange;
+}
 
-//           case 1:
-//             Serial.println("\nPlease input and angle for Servo 1(Left front): ");
-//             read_int = Serial.read();
-//             ang[1] = read_int;
-//             break;
+void servoLeftBack(float ange, int timewalk) {
+  float angtmp = ange - AngS[1];
+  for (int i = 0; i < timewalk; i++) {
+    servo2.write(input_ang(2, AngS[2] + angtmp * i / timewalk));
+    delay(10);
+  }
+  AngS[2] = ange;
+}
 
-//           case 2:
-//             Serial.println("\nPlease input and angle for Servo 2(Left back): ");
-//             read_int = Serial.read();
-//             ang[2] = read_int;
-//             break;
+void servoRightFront(float ange, int timewalk) {
+  float angtmp = ange - AngS[1];
+  for (int i = 0; i < timewalk; i++) {
+    servo3.write(input_ang(3, AngS[3] + angtmp * i / timewalk));
+    delay(1);
+  }
+  AngS[3] = ange;
+}
 
-//           case 3:
-//             Serial.println("\nPlease input and angle for Servo 3(Right front): ");
-//             read_int = Serial.read();
-//             ang[3] = read_int;
-//             break;
+void servoRightBack(float ange, int timewalk) {
+  float angtmp = ange - AngS[1];
+  for (int i = 0; i < timewalk; i++) {
+    servo4.write(input_ang(4, AngS[4] + angtmp * i / timewalk));
+    delay(1);
+  }
+  AngS[4] = ange;
+}
 
-//           case 4:
-//             Serial.println("\nPlease input and angle for Servo 4(Right back): ");
-//             read_int = Serial.read();
-//             ang[4] = read_int;
-//             break;
-//         }
-//       } else {
-//         Serial.println("Please Input A Int");
-//       }
-//     servo1.write(180*(220 - ang[1])/260);
-//     servo2.write(180*(40 - ang[2])/260);
-//     servo3.write(180*(40 + ang[3])/260);
-//     servo4.write(180*(220 + ang[4])/260);
-//   }
-//   for(int i = 0; i <= 4; i++){
-//       osang[i] = ang[i];
-//       ang[i] = 0;
-//     }
-//   preferences.putInt("LFAngle", osang[1]);
-//   preferences.putInt("LBAngle", osang[2]);
-//   preferences.putInt("RFAngle", osang[3]);
-//   preferences.putInt("RBAngle", osang[4]);
-// }
+void Servo_Init() {
+  Serial.println("Servo_Init start");
+  preferences.begin("memory", false);
+
+  servo1.attach(servo1Pin, minUs, maxUs);
+  servo2.attach(servo2Pin, minUs, maxUs);
+  servo3.attach(servo3Pin, minUs, maxUs);
+  servo4.attach(servo4Pin, minUs, maxUs);
+  servo5.attach(servo5Pin, minUs, maxUs);
+
+  Serial.println("Servo_Init osang");
+  osang[1] = preferences.getInt("LFAngle", osang[1]);
+  osang[2] = preferences.getInt("LBAngle", osang[2]);
+  osang[3] = preferences.getInt("RFAngle", osang[3]);
+  osang[4] = preferences.getInt("RBAngle", osang[4]);
+  for (int i = 0; i < 4; i++) {
+    AngS[i] = osang[i];
+    Serial.print("osang[i]");
+    Serial.println(osang[i]);
+  }
+
+  Serial.println("Servo_Init servo write");
+  servo1.write(180 * (220 - osang[1]) / 260);
+  servo2.write(180 * (40 - osang[2]) / 260);
+  servo3.write(180 * (40 + osang[3]) / 260);
+  servo4.write(180 * (220 + osang[4]) / 260);
+
+  Serial.println("Servo_Init servo5");
+  servo5.write(input_ang(5, 0));
+  Serial.println("Servo_Init end");
+  // delay(5000);
+}
+
+void MoveForward() {
+  for (int i = 0; i < 10; i++) {
+    Serial.print("MoveForward loop count:");
+    Serial.println(i);
+    servo(15, 0, 0, 0, timewalk1);
+    servo(15, 0, 0, 15, timewalk1);
+    servo(15, 0, -15, 15, timewalk2);
+    servo(15, -15, -15, 15, timewalk2);
+    servo(0, -15, -15, 15, timewalk2);
+    servo(0, -15, -15, 0, timewalk2);
+    servo(0, 0, -15, 0, timewalk1);
+    servo(0, 0, 0, 0, timewalk1);
+  }
+}
 
 
 void Servo_forward() {
@@ -156,6 +195,7 @@ void Servo_forward() {
     Serial.println(round);
     Serial.print("walkcount:");
     Serial.println(walkcount);
+    delay(3000);
     switch (walkcount) {
       case 1:
         servo(15, 0, 0, 0, timewalk1);
@@ -176,22 +216,22 @@ void Servo_forward() {
         break;
 
       case 4:
-        servo(0, 0, 15, 0, timewalk1);
-        servo(0, 15, 15, 0, timewalk1);
+        servo(0, 0, -15, 0, timewalk1);
+        servo(0, 0, 0, 0, timewalk1);
         walkcount++;
         break;
 
-      case 5:
-        servo(-15, 15, 15, 0, timewalk2);
-        servo(-15, 15, 15, -15, timewalk2);
-        walkcount++;
-        break;
+        // case 5:
+        //   servo(-15, 15, 15, 0, timewalk2);
+        //   servo(-15, 15, 15, -15, timewalk2);
+        //   walkcount++;
+        //   break;
 
-      case 6:
-        servo(-15, 15, 0, -15, timewalk2);
-        servo(-15, 0, 0, -15, timewalk2);
-        walkcount = 1;
-        break;
+        // case 6:
+        //   servo(-15, 15, 0, -15, timewalk2);
+        //   servo(-15, 0, 0, -15, timewalk2);
+        //   walkcount = 1;
+        //   break;
     }
     round++;
   }
