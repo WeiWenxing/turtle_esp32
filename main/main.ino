@@ -4,6 +4,7 @@
 #include "i2s_adc.h"
 #include "cloud.h"
 #include "tts.h"
+#include "server.h"
 
 const char* ssid = "Mangdang";
 const char* password = "mangdang";
@@ -54,6 +55,14 @@ void record_task(void* args) {
   // vTaskDelete(NULL);
 }
 
+void server_task(void* args) {
+  startupServer();
+  while (1) {
+    acceptClient();
+    delay(10);
+  }
+}
+
 
 void setup() {
   Serial.begin(115200);
@@ -70,12 +79,17 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     // xTaskCreate(record_task, "record_task", 1024 * 8, NULL, 1, NULL);
     // record_task((void*)NULL);
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
+    // xTaskCreate(server_task, "server_task", 1024 * 8, NULL, 1, NULL);
   } else {
     Serial.println("WiFi Disconnected");
   }
 }
 
 void loop() {
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
   Serial.println("=================================Record start!=================================");
   record();
   Serial.println("Record end!");
