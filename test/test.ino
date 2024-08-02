@@ -2,6 +2,7 @@
 
 #include <WiFi.h>
 #include "Audio.h"
+#include "action.h"
 
 const char* ssid = "Mangdang";
 const char* password = "mangdang";
@@ -70,12 +71,20 @@ void setup() {
   unsigned long split_time = millis();
   int file_duration, cur_audio_time;
   Audio* audio = nullptr;
+  Servo_Init();
   while (1) {
     if (Serial.available() > 0) {
       String text = Serial.readStringUntil('\n');
       text.trim();  // 移除输入字符串两端的空格和换行符
 
       if (text.length() > 0) {
+        if (text == "come") {
+          Servo_forward();
+          continue;
+        } else if (text == "init") {
+          Servo_Init();
+          continue;
+        }
         if (audio) {
           audio->stopSong();
           delete audio;
@@ -116,8 +125,8 @@ void setup() {
       // cur_audio_time = audio.getAudioCurrentTime();
       // Serial.print("cur_audio_time: ");
       // Serial.println(cur_audio_time);
-      if (audio)
-        audio->stopSong();
+      // if (audio)
+      // audio->stopSong();
     }
   }
 }
